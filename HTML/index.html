@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>サーバーコンフィグ</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <link rel="icon" href="favicon.ico">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div class="left-half">
+            <p>コンソール</p>
+        </div>
+          <div class="right-container">
+            <div class="right-top">
+                <p>使用率(グラフ)</p>
+                <canvas id="myChart" width="400" height="200"></canvas>
+                <script>
+
+                </script>
+            </div>
+            <div class="right-bottom">
+                <p>スペック</p>
+                <p id="CPU_Name">CPU</p>
+                <p id="Mem_Value">メモリ</p>
+                <p id="Storage">ストレージ</p>
+            </div>
+          </div>
+        <script>
+            const count=0;
+            function resizeChart() {
+                myChart.canvas.parentNode.style.width = '400px';
+                myChart.canvas.parentNode.style.height = '200px';
+            }
+            // 初期データ
+            var initialData = {
+                labels: [],
+                datasets: [{
+                label: 'CPU使用率',
+                data: [],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+                },{
+                    label: 'メモリ使用率',
+                    data: [],
+                    backgroundColor: 'rgba(192, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            };
+        
+            // グラフの描画設定
+            var chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: [{
+                    type: 'linear',
+                    position: 'bottom'
+                    }]
+                }
+            };
+        
+            // Chart.jsのグラフオブジェクトを取得
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: initialData,
+                options: chartOptions
+            });
+        
+            // 動的にデータを追加する関数
+            function addData(x, y) {
+                myChart.data.labels.push(x);
+                myChart.data.datasets[0].data.push(y[0]);
+                myChart.data.labels.push(x);
+                myChart.data.datasets[1].data.push(y[1]);
+                myChart.update(); // グラフを更新
+            }
+            function makeGETRequest() {
+                var xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 取得したデータをコンソールに表示
+                    var y_list=xhr.responseText.split(" ")
+                    console.log(y_list[1])
+                    addData(count,y_list);
+                }
+                };
+            // GETリクエストの送信先URLを指定
+            var url = 'http://localhost:8080/use_rate';
+
+            // GETリクエストの設定
+            xhr.open('GET', url, true);
+            // GETリクエストの送信
+            xhr.send();
+            }
+            setInterval(makeGETRequest, 1000);
+            window.addEventListener('resize', resizeChart);
+            function PC_info_GETRequest() {
+                var xhr = new XMLHttpRequest();
+                var CPU_Element = document.getElementById('CPU_Name');
+                var Mem_Element = document.getElementById('Mem_Value');
+                var Storage = document.getElementById('Storage');
+                xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 取得したデータをコンソールに表示
+                    var info_list=xhr.responseText.split(" ");
+                    CPU_Element.textContent="CPU:"+info_list[0];
+                    Mem_Element.textContent="メモリ:"+info_list[1];
+                    Storage.textContent="ストレージ:"+info_list[2];
+                }
+                };
+            // GETリクエストの送信先URLを指定
+            var url = 'http://localhost:8080/PC_info';
+
+            // GETリクエストの設定
+            xhr.open('GET', url, true);
+            // GETリクエストの送信
+            xhr.send();
+            }
+            PC_info_GETRequest();
+        </script>
+    </body>
+</html>

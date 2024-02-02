@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+  }
+
+  .left-half {
+    flex: 1;
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .right-top {
+    background-color: #e0e0e0;
+    padding: 20px;
+  }
+
+  .right-bottom {
+    background-color: #d0d0d0;
+    padding: 20px;
+    margin-top: auto; /* 上部を自動的に余白にすることで下部に配置 */
+}
+#myChart {
+    max-width: 100%;
+    max-height: 100%;
+  }

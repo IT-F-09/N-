@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./PC_info",
+        "./PC_info"
+    ]
+}
